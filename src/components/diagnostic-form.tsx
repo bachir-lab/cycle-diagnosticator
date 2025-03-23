@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { cn } from "@/lib/utils";
 import { 
-  ArrowRight, ArrowLeft, Bike, Tool, 
+  ArrowRight, ArrowLeft, Bike, Wrench, 
   RefreshCw, RotateCcw, AlertCircle, CheckCircle2 
 } from "lucide-react";
 
@@ -390,7 +389,7 @@ export function DiagnosticForm() {
         title: "Salvage for Parts",
         description:
           "While this bike may not be worth refurbishing as a whole, many of its parts are still in good condition and can be salvaged for reuse.",
-        icon: <Tool className="h-8 w-8 text-amber-500" />,
+        icon: <Wrench className="h-8 w-8 text-amber-500" />,
         color: "bg-amber-100 text-amber-800 border-amber-200",
       };
     } else {
