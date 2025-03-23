@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -35,8 +36,8 @@ type Question = {
 const diagnosticQuestions: Question[] = [
   {
     id: "frame",
-    text: "What is the condition of the bike frame?",
-    subtext: "Examine the frame for cracks, dents, rust, or other damage.",
+    text: "Quel est l'état du cadre du vélo ?",
+    subtext: "Examinez le cadre pour détecter des fissures, des bosses, de la rouille ou d'autres dommages.",
     options: [
       {
         label: "Excellent",
@@ -45,25 +46,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 7, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 4, salvage: 3, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 0, salvage: 5, recycle: 2 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 0, recycle: 10 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -72,8 +73,8 @@ const diagnosticQuestions: Question[] = [
   },
   {
     id: "wheels",
-    text: "How would you rate the condition of the wheels?",
-    subtext: "Check for rim damage, spoke tension, and if they're true.",
+    text: "Comment évaluez-vous l'état des roues ?",
+    subtext: "Vérifiez les dommages sur les jantes, la tension des rayons et si elles sont dévoilées.",
     options: [
       {
         label: "Excellent",
@@ -82,25 +83,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 6, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 3, salvage: 3, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 0, salvage: 5, recycle: 0 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 2, recycle: 7 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -109,8 +110,8 @@ const diagnosticQuestions: Question[] = [
   },
   {
     id: "drivetrain",
-    text: "What is the condition of the drivetrain (chain, cassette, crankset)?",
-    subtext: "Check for wear, rust, and proper function.",
+    text: "Quel est l'état de la transmission (chaîne, cassette, pédalier) ?",
+    subtext: "Vérifiez l'usure, la rouille et le bon fonctionnement.",
     options: [
       {
         label: "Excellent",
@@ -119,25 +120,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 5, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 3, salvage: 2, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 0, salvage: 4, recycle: 1 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 1, recycle: 6 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -146,8 +147,8 @@ const diagnosticQuestions: Question[] = [
   },
   {
     id: "brakes",
-    text: "How would you rate the braking system?",
-    subtext: "Assess brake pads, cables, and stopping power.",
+    text: "Comment évaluez-vous le système de freinage ?",
+    subtext: "Évaluez les plaquettes de frein, les câbles et la puissance de freinage.",
     options: [
       {
         label: "Excellent",
@@ -156,25 +157,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 5, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 3, salvage: 2, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 1, salvage: 4, recycle: 0 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 2, recycle: 4 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -183,8 +184,8 @@ const diagnosticQuestions: Question[] = [
   },
   {
     id: "shifting",
-    text: "How well does the shifting system work?",
-    subtext: "Check shifters, derailleurs, and shifting performance.",
+    text: "Comment fonctionne le système de changement de vitesse ?",
+    subtext: "Vérifiez les manettes, les dérailleurs et la performance du changement de vitesse.",
     options: [
       {
         label: "Excellent",
@@ -193,25 +194,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 5, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 3, salvage: 2, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 1, salvage: 4, recycle: 0 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 1, recycle: 4 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -220,8 +221,8 @@ const diagnosticQuestions: Question[] = [
   },
   {
     id: "accessories",
-    text: "What is the condition of accessories and other components?",
-    subtext: "Saddle, handlebars, pedals, etc.",
+    text: "Quel est l'état des accessoires et autres composants ?",
+    subtext: "Selle, guidon, pédales, etc.",
     options: [
       {
         label: "Excellent",
@@ -230,25 +231,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 4, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 2, salvage: 1, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 0, salvage: 3, recycle: 0 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 1, recycle: 3 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -257,8 +258,8 @@ const diagnosticQuestions: Question[] = [
   },
   {
     id: "condition",
-    text: "What is the overall cosmetic condition?",
-    subtext: "Consider paint, decals, and general appearance.",
+    text: "Quel est l'état cosmétique général ?",
+    subtext: "Considérez la peinture, les décalcomanies et l'apparence générale.",
     options: [
       {
         label: "Excellent",
@@ -267,25 +268,25 @@ const diagnosticQuestions: Question[] = [
         icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
       },
       {
-        label: "Good",
+        label: "Bon",
         value: "good",
         score: { refurbish: 4, salvage: 0, recycle: 0 },
         icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
       },
       {
-        label: "Fair",
+        label: "Moyen",
         value: "fair",
         score: { refurbish: 2, salvage: 1, recycle: 0 },
         icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
       },
       {
-        label: "Poor",
+        label: "Mauvais",
         value: "poor",
         score: { refurbish: 1, salvage: 2, recycle: 0 },
         icon: <AlertCircle className="text-red-400 h-5 w-5" />,
       },
       {
-        label: "Beyond repair",
+        label: "Irréparable",
         value: "beyond",
         score: { refurbish: 0, salvage: 0, recycle: 3 },
         icon: <AlertCircle className="text-red-600 h-5 w-5" />,
@@ -377,27 +378,27 @@ export function DiagnosticForm() {
     if (maxScore === scores.refurbish) {
       return {
         type: "refurbish",
-        title: "Refurbish",
+        title: "Remettre à Neuf",
         description:
-          "This bike is in good enough condition to be refurbished and resold. It may need some repairs, but overall it's worth restoring.",
+          "Ce vélo est en assez bon état pour être remis à neuf et revendu. Il peut nécessiter quelques réparations, mais dans l'ensemble, il vaut la peine d'être restauré.",
         icon: <RefreshCw className="h-8 w-8 text-green-500" />,
         color: "bg-green-100 text-green-800 border-green-200",
       };
     } else if (maxScore === scores.salvage) {
       return {
         type: "salvage",
-        title: "Salvage for Parts",
+        title: "Récupérer les Pièces",
         description:
-          "While this bike may not be worth refurbishing as a whole, many of its parts are still in good condition and can be salvaged for reuse.",
+          "Bien que ce vélo ne vaille peut-être pas la peine d'être remis à neuf dans son ensemble, beaucoup de ses pièces sont encore en bon état et peuvent être récupérées pour être réutilisées.",
         icon: <Wrench className="h-8 w-8 text-amber-500" />,
         color: "bg-amber-100 text-amber-800 border-amber-200",
       };
     } else {
       return {
         type: "recycle",
-        title: "Recycle",
+        title: "Recycler",
         description:
-          "This bike is beyond economical repair and the parts are not in good enough condition to salvage. It should be sent for proper recycling.",
+          "Ce vélo est au-delà d'une réparation économique et les pièces ne sont pas en assez bon état pour être récupérées. Il devrait être envoyé pour un recyclage approprié.",
         icon: <RotateCcw className="h-8 w-8 text-blue-500" />,
         color: "bg-blue-100 text-blue-800 border-blue-200",
       };
@@ -470,7 +471,7 @@ export function DiagnosticForm() {
                 className="diagnostic-button"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Previous
+                Précédent
               </Button>
             </div>
           </motion.div>
@@ -483,9 +484,9 @@ export function DiagnosticForm() {
             className="space-y-8"
           >
             <div className="text-center">
-              <h1 className="text-3xl font-bold mb-2">Diagnostic Results</h1>
+              <h1 className="text-3xl font-bold mb-2">Résultats du Diagnostic</h1>
               <p className="text-muted-foreground">
-                Based on your assessment, here's our recommendation:
+                Selon votre évaluation, voici notre recommandation:
               </p>
             </div>
 
@@ -515,19 +516,19 @@ export function DiagnosticForm() {
                 <div className="text-xl font-semibold text-green-600">
                   {Math.round((scores.refurbish / 50) * 100)}%
                 </div>
-                <div className="text-sm text-muted-foreground">Refurbish</div>
+                <div className="text-sm text-muted-foreground">Remettre à Neuf</div>
               </Card>
               <Card className="p-4 text-center">
                 <div className="text-xl font-semibold text-amber-600">
                   {Math.round((scores.salvage / 25) * 100)}%
                 </div>
-                <div className="text-sm text-muted-foreground">Salvage</div>
+                <div className="text-sm text-muted-foreground">Récupérer</div>
               </Card>
               <Card className="p-4 text-center">
                 <div className="text-xl font-semibold text-blue-600">
                   {Math.round((scores.recycle / 37) * 100)}%
                 </div>
-                <div className="text-sm text-muted-foreground">Recycle</div>
+                <div className="text-sm text-muted-foreground">Recycler</div>
               </Card>
             </div>
 
@@ -536,7 +537,7 @@ export function DiagnosticForm() {
               className="w-full diagnostic-button"
             >
               <Bike className="mr-2 h-5 w-5" />
-              Start New Assessment
+              Commencer une Nouvelle Évaluation
             </Button>
           </motion.div>
         )}

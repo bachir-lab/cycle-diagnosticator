@@ -25,12 +25,12 @@ const NotFound = () => {
           </div>
           <h1 className="text-4xl font-bold">404</h1>
           <p className="text-xl text-muted-foreground">
-            Sorry, we couldn't find the page you're looking for.
+            Désolé, nous n'avons pas pu trouver la page que vous cherchez.
           </p>
           <Button asChild className="diagnostic-button">
             <a href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Return to Home
+              Retourner à l'Accueil
             </a>
           </Button>
         </div>
