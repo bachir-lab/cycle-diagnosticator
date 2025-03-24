@@ -1,6 +1,5 @@
 
 import { DiagnosticForm } from "@/components/diagnostic-form";
-import { Bike } from "lucide-react";
 
 const Index = () => {
   return (
@@ -8,9 +7,12 @@ const Index = () => {
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-border shadow-sm py-4">
         <div className="container max-w-7xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Bike className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-medium">Vélo Diagnostic</h1>
+            <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/6e76aa05-4dab-4b0a-8fc5-036599ea3ce1.png" 
+                alt="Vélocampus Nantes" 
+                className="h-10 w-auto"
+              />
             </div>
             <div className="text-sm text-muted-foreground">
               Un outil pour les ateliers de réparation de vélos
