@@ -383,6 +383,9 @@ export function DiagnosticForm() {
           "Ce vélo est en assez bon état pour être remis à neuf et revendu. Il peut nécessiter quelques réparations, mais dans l'ensemble, il vaut la peine d'être restauré.",
         icon: <RefreshCw className="h-8 w-8 text-green-500" />,
         color: "bg-green-100 text-green-800 border-green-200",
+        bgGradient: "bg-gradient-to-br from-green-50 to-green-100",
+        textColor: "text-green-800",
+        iconBg: "bg-green-500/10 text-green-600"
       };
     } else if (maxScore === scores.salvage) {
       return {
@@ -392,6 +395,9 @@ export function DiagnosticForm() {
           "Bien que ce vélo ne vaille peut-être pas la peine d'être remis à neuf dans son ensemble, beaucoup de ses pièces sont encore en bon état et peuvent être récupérées pour être réutilisées.",
         icon: <Wrench className="h-8 w-8 text-amber-500" />,
         color: "bg-amber-100 text-amber-800 border-amber-200",
+        bgGradient: "bg-gradient-to-br from-amber-50 to-amber-100",
+        textColor: "text-amber-800",
+        iconBg: "bg-amber-500/10 text-amber-600"
       };
     } else {
       return {
@@ -401,6 +407,9 @@ export function DiagnosticForm() {
           "Ce vélo est au-delà d'une réparation économique et les pièces ne sont pas en assez bon état pour être récupérées. Il devrait être envoyé pour un recyclage approprié.",
         icon: <RotateCcw className="h-8 w-8 text-blue-500" />,
         color: "bg-blue-100 text-blue-800 border-blue-200",
+        bgGradient: "bg-gradient-to-br from-blue-50 to-blue-100",
+        textColor: "text-blue-800",
+        iconBg: "bg-blue-500/10 text-blue-600"
       };
     }
   };
@@ -492,49 +501,104 @@ export function DiagnosticForm() {
 
             <Card
               className={cn(
-                "diagnostic-card border-2",
+                "border-2 shadow-lg overflow-hidden",
                 recommendation.color
               )}
             >
-              <div className="text-center space-y-6">
-                <div className="mx-auto w-16 h-16 rounded-full bg-white flex items-center justify-center border">
-                  {recommendation.icon}
-                </div>
-                <div>
-                  <h2 className="text-2xl font-semibold mb-2">
-                    {recommendation.title}
-                  </h2>
-                  <p className="text-muted-foreground">
-                    {recommendation.description}
-                  </p>
+              <div className={cn("p-1", recommendation.bgGradient)}>
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-8">
+                  <div className="text-center space-y-6">
+                    <div className={cn("mx-auto w-20 h-20 rounded-full flex items-center justify-center border shadow-sm", recommendation.iconBg)}>
+                      <motion.div
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: 0, ease: "easeInOut" }}
+                      >
+                        {recommendation.icon}
+                      </motion.div>
+                    </div>
+                    <div>
+                      <h2 className={cn("text-2xl font-semibold mb-3", recommendation.textColor)}>
+                        {recommendation.title}
+                      </h2>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {recommendation.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
 
             <div className="grid grid-cols-3 gap-4">
-              <Card className="p-4 text-center">
-                <div className="text-xl font-semibold text-green-600">
-                  {Math.round((scores.refurbish / 50) * 100)}%
-                </div>
-                <div className="text-sm text-muted-foreground">Remettre à Neuf</div>
-              </Card>
-              <Card className="p-4 text-center">
-                <div className="text-xl font-semibold text-amber-600">
-                  {Math.round((scores.salvage / 25) * 100)}%
-                </div>
-                <div className="text-sm text-muted-foreground">Récupérer</div>
-              </Card>
-              <Card className="p-4 text-center">
-                <div className="text-xl font-semibold text-blue-600">
-                  {Math.round((scores.recycle / 37) * 100)}%
-                </div>
-                <div className="text-sm text-muted-foreground">Recycler</div>
-              </Card>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <Card className="p-5 text-center hover:shadow-md transition-shadow">
+                  <div className="text-sm text-muted-foreground mb-1">Remettre à Neuf</div>
+                  <div className="text-2xl font-semibold text-green-600">
+                    {Math.round((scores.refurbish / 50) * 100)}%
+                  </div>
+                  <div className="w-full bg-gray-100 h-1.5 mt-2 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-green-500 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((scores.refurbish / 50) * 100)}%` }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    />
+                  </div>
+                </Card>
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <Card className="p-5 text-center hover:shadow-md transition-shadow">
+                  <div className="text-sm text-muted-foreground mb-1">Récupérer</div>
+                  <div className="text-2xl font-semibold text-amber-600">
+                    {Math.round((scores.salvage / 25) * 100)}%
+                  </div>
+                  <div className="w-full bg-gray-100 h-1.5 mt-2 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-amber-500 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((scores.salvage / 25) * 100)}%` }}
+                      transition={{ duration: 0.8, delay: 0.3 }}
+                    />
+                  </div>
+                </Card>
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+              >
+                <Card className="p-5 text-center hover:shadow-md transition-shadow">
+                  <div className="text-sm text-muted-foreground mb-1">Recycler</div>
+                  <div className="text-2xl font-semibold text-blue-600">
+                    {Math.round((scores.recycle / 37) * 100)}%
+                  </div>
+                  <div className="w-full bg-gray-100 h-1.5 mt-2 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-blue-500 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((scores.recycle / 37) * 100)}%` }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                    />
+                  </div>
+                </Card>
+              </motion.div>
             </div>
 
             <Button
               onClick={resetDiagnostic}
-              className="w-full diagnostic-button"
+              className="w-full diagnostic-button hover:bg-green-600 shadow-md"
+              size="lg"
             >
               <Bike className="mr-2 h-5 w-5" />
               Commencer une Nouvelle Évaluation

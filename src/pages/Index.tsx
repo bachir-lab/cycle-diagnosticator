@@ -1,6 +1,7 @@
 
 import { DiagnosticForm } from "@/components/diagnostic-form";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -14,11 +15,13 @@ const Index = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <img 
-                src="/lovable-uploads/6e76aa05-4dab-4b0a-8fc5-036599ea3ce1.png" 
-                alt="Vélocampus Nantes" 
-                className="h-12 w-auto drop-shadow-sm"
-              />
+              <Link to="/" className="hover:opacity-90 transition-opacity">
+                <img 
+                  src="/lovable-uploads/6e76aa05-4dab-4b0a-8fc5-036599ea3ce1.png" 
+                  alt="Vélocampus Nantes" 
+                  className="h-12 w-auto drop-shadow-sm"
+                />
+              </Link>
             </motion.div>
             <motion.div 
               className="text-sm font-medium px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-100 shadow-sm"
