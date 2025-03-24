@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 0 0% 100%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -16,16 +16,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 210 100% 50%;
+    --primary: 142 76% 36%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 20% 96%;
+    --secondary: 142 30% 96%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96%;
+    --accent: 142 70% 96%;
     --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
@@ -33,7 +33,7 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 222 84% 5%;
+    --ring: 142 76% 36%;
 
     --radius: 0.75rem;
   }
@@ -46,6 +46,7 @@
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -73,7 +74,11 @@
 
 @layer components {
   .diagnostic-card {
-    @apply bg-card p-8 rounded-2xl border border-border shadow-sm transition-all duration-300;
+    @apply bg-card p-8 rounded-2xl border border-border shadow-sm transition-all duration-300 hover:shadow-md;
+  }
+  
+  .option-card {
+    @apply w-full text-left p-4 rounded-xl border transition-all duration-200 hover:shadow-sm;
   }
 
   .diagnostic-button {
@@ -81,12 +86,20 @@
   }
 
   .glass-panel {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+    @apply bg-white/90 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+  
+  .result-card {
+    @apply p-6 rounded-xl shadow-sm border-2 transition-all;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .animate-enter {
+    @apply transition-all duration-300 ease-out;
   }
 }
