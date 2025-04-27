@@ -3,419 +3,82 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { cn } from "@/lib/utils";
+import { DiagnosticResult } from "@/types/diagnostic";
+import { diagnosticQuestions, additionalChecks } from "@/data/diagnostic-questions";
 import { 
-  ArrowRight, ArrowLeft, Bike, Wrench, 
-  RefreshCw, RotateCcw, AlertCircle, CheckCircle2 
+  ArrowLeft, Bike, Wrench, 
+  RotateCcw, Check, X
 } from "lucide-react";
 
-type DiagnosticCriteria = {
-  [key: string]: number;
-};
-
-type QuestionOption = {
-  label: string;
-  value: string;
-  score: {
-    refurbish: number;
-    salvage: number;
-    recycle: number;
-  };
-  icon?: React.ReactNode;
-};
-
-type Question = {
-  id: string;
-  text: string;
-  subtext?: string;
-  options: QuestionOption[];
-};
-
-// Define the questions for the diagnostic
-const diagnosticQuestions: Question[] = [
-  {
-    id: "frame",
-    text: "Quel est l'état du cadre du vélo ?",
-    subtext: "Examinez le cadre pour détecter des fissures, des bosses, de la rouille ou d'autres dommages.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 10, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 7, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 4, salvage: 3, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 0, salvage: 5, recycle: 2 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 0, recycle: 10 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    id: "wheels",
-    text: "Comment évaluez-vous l'état des roues ?",
-    subtext: "Vérifiez les dommages sur les jantes, la tension des rayons et si elles sont dévoilées.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 8, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 6, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 3, salvage: 3, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 0, salvage: 5, recycle: 0 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 2, recycle: 7 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    id: "drivetrain",
-    text: "Quel est l'état de la transmission (chaîne, cassette, pédalier) ?",
-    subtext: "Vérifiez l'usure, la rouille et le bon fonctionnement.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 7, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 5, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 3, salvage: 2, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 0, salvage: 4, recycle: 1 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 1, recycle: 6 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    id: "brakes",
-    text: "Comment évaluez-vous le système de freinage ?",
-    subtext: "Évaluez les plaquettes de frein, les câbles et la puissance de freinage.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 7, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 5, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 3, salvage: 2, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 1, salvage: 4, recycle: 0 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 2, recycle: 4 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    id: "shifting",
-    text: "Comment fonctionne le système de changement de vitesse ?",
-    subtext: "Vérifiez les manettes, les dérailleurs et la performance du changement de vitesse.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 7, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 5, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 3, salvage: 2, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 1, salvage: 4, recycle: 0 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 1, recycle: 4 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    id: "accessories",
-    text: "Quel est l'état des accessoires et autres composants ?",
-    subtext: "Selle, guidon, pédales, etc.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 5, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 4, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 2, salvage: 1, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 0, salvage: 3, recycle: 0 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 1, recycle: 3 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    id: "condition",
-    text: "Quel est l'état cosmétique général ?",
-    subtext: "Considérez la peinture, les décalcomanies et l'apparence générale.",
-    options: [
-      {
-        label: "Excellent",
-        value: "excellent",
-        score: { refurbish: 6, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-500 h-5 w-5" />,
-      },
-      {
-        label: "Bon",
-        value: "good",
-        score: { refurbish: 4, salvage: 0, recycle: 0 },
-        icon: <CheckCircle2 className="text-green-400 h-5 w-5" />,
-      },
-      {
-        label: "Moyen",
-        value: "fair",
-        score: { refurbish: 2, salvage: 1, recycle: 0 },
-        icon: <AlertCircle className="text-amber-400 h-5 w-5" />,
-      },
-      {
-        label: "Mauvais",
-        value: "poor",
-        score: { refurbish: 1, salvage: 2, recycle: 0 },
-        icon: <AlertCircle className="text-red-400 h-5 w-5" />,
-      },
-      {
-        label: "Irréparable",
-        value: "beyond",
-        score: { refurbish: 0, salvage: 0, recycle: 3 },
-        icon: <AlertCircle className="text-red-600 h-5 w-5" />,
-      },
-    ],
-  },
-];
-
 export function DiagnosticForm() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [scores, setScores] = useState<DiagnosticCriteria>({
-    refurbish: 0,
-    salvage: 0,
-    recycle: 0,
-  });
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, boolean>>({});
+  const [additionalIssues, setAdditionalIssues] = useState<string[]>([]);
+  const [result, setResult] = useState<DiagnosticResult | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const totalQuestions = diagnosticQuestions.length;
 
-  const handleOptionSelect = (questionId: string, option: QuestionOption) => {
-    const newAnswers = { ...answers, [questionId]: option.value };
+  const currentQuestion = diagnosticQuestions[currentQuestionIndex];
+
+  const handleAnswer = (answer: boolean) => {
+    const newAnswers = { ...answers, [currentQuestion.id]: answer };
     setAnswers(newAnswers);
 
-    const newScores = { ...scores };
-    newScores.refurbish += option.score.refurbish;
-    newScores.salvage += option.score.salvage;
-    newScores.recycle += option.score.recycle;
-    setScores(newScores);
+    if (currentQuestion.nextStep) {
+      const nextAction = answer ? currentQuestion.nextStep.yes : currentQuestion.nextStep.no;
 
-    // Auto advance after selection
-    if (currentStep < totalQuestions - 1) {
-      setTimeout(() => {
-        setCurrentStep(currentStep + 1);
-      }, 400);
-    } else {
-      setTimeout(() => {
+      if (nextAction === "dismantle") {
+        setResult({
+          decision: "dismantle",
+          additionalTasks: []
+        });
         setShowResults(true);
-      }, 400);
+      } else if (nextAction === "continue") {
+        if (currentQuestionIndex < diagnosticQuestions.length - 1) {
+          setTimeout(() => {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+          }, 300);
+        }
+      }
     }
   };
 
-  const goToPreviousStep = () => {
-    if (currentStep > 0) {
-      // Subtract the scores from the previous answer
-      const prevQuestion = diagnosticQuestions[currentStep - 1];
-      const prevAnswer = answers[prevQuestion.id];
-      
-      if (prevAnswer) {
-        const prevOption = prevQuestion.options.find(
-          (opt) => opt.value === prevAnswer
-        );
-        
-        if (prevOption) {
-          const newScores = { ...scores };
-          newScores.refurbish -= prevOption.score.refurbish;
-          newScores.salvage -= prevOption.score.salvage;
-          newScores.recycle -= prevOption.score.recycle;
-          setScores(newScores);
-        }
-        
-        // Remove the answer
-        const newAnswers = { ...answers };
-        delete newAnswers[prevQuestion.id];
-        setAnswers(newAnswers);
-      }
-      
-      setCurrentStep(currentStep - 1);
-    }
+  const handleAdditionalChecks = (checkId: string, checked: boolean) => {
+    setAdditionalIssues(prev => 
+      checked 
+        ? [...prev, checkId]
+        : prev.filter(id => id !== checkId)
+    );
+  };
+
+  const finalizeCheck = () => {
+    const additionalTasks = additionalIssues.map(issueId => {
+      const check = additionalChecks.find(c => c.id === issueId);
+      return {
+        task: check?.text || "",
+        timeEstimate: check?.timeEstimate || 0
+      };
+    });
+
+    const totalTime = additionalTasks.reduce((acc, task) => acc + task.timeEstimate, 0);
+
+    setResult({
+      decision: totalTime > 60 ? "dismantle" : "keep",
+      additionalTasks,
+      totalAdditionalTime: totalTime
+    });
+    setShowResults(true);
   };
 
   const resetDiagnostic = () => {
-    setCurrentStep(0);
+    setCurrentQuestionIndex(0);
     setAnswers({});
-    setScores({
-      refurbish: 0,
-      salvage: 0,
-      recycle: 0,
-    });
+    setAdditionalIssues([]);
+    setResult(null);
     setShowResults(false);
   };
-
-  const getRecommendation = () => {
-    const maxScore = Math.max(
-      scores.refurbish,
-      scores.salvage,
-      scores.recycle
-    );
-
-    if (maxScore === scores.refurbish) {
-      return {
-        type: "refurbish",
-        title: "Remettre à Neuf",
-        description:
-          "Ce vélo est en assez bon état pour être remis à neuf et revendu. Il peut nécessiter quelques réparations, mais dans l'ensemble, il vaut la peine d'être restauré.",
-        icon: <RefreshCw className="h-8 w-8 text-green-500" />,
-        color: "bg-green-100 text-green-800 border-green-200",
-        bgGradient: "bg-gradient-to-br from-green-50 to-green-100",
-        textColor: "text-green-800",
-        iconBg: "bg-green-500/10 text-green-600"
-      };
-    } else if (maxScore === scores.salvage) {
-      return {
-        type: "salvage",
-        title: "Récupérer les Pièces",
-        description:
-          "Bien que ce vélo ne vaille peut-être pas la peine d'être remis à neuf dans son ensemble, beaucoup de ses pièces sont encore en bon état et peuvent être récupérées pour être réutilisées.",
-        icon: <Wrench className="h-8 w-8 text-amber-500" />,
-        color: "bg-amber-100 text-amber-800 border-amber-200",
-        bgGradient: "bg-gradient-to-br from-amber-50 to-amber-100",
-        textColor: "text-amber-800",
-        iconBg: "bg-amber-500/10 text-amber-600"
-      };
-    } else {
-      return {
-        type: "recycle",
-        title: "Recycler",
-        description:
-          "Ce vélo est au-delà d'une réparation économique et les pièces ne sont pas en assez bon état pour être récupérées. Il devrait être envoyé pour un recyclage approprié.",
-        icon: <RotateCcw className="h-8 w-8 text-blue-500" />,
-        color: "bg-blue-100 text-blue-800 border-blue-200",
-        bgGradient: "bg-gradient-to-br from-blue-50 to-blue-100",
-        textColor: "text-blue-800",
-        iconBg: "bg-blue-500/10 text-blue-600"
-      };
-    }
-  };
-
-  const currentQuestion = diagnosticQuestions[currentStep];
-  const recommendation = getRecommendation();
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4 py-8">
@@ -430,12 +93,12 @@ export function DiagnosticForm() {
             className="space-y-6"
           >
             <ProgressIndicator
-              currentStep={currentStep + 1}
-              totalSteps={totalQuestions}
+              currentStep={currentQuestionIndex + 1}
+              totalSteps={diagnosticQuestions.length}
               className="mb-8"
             />
 
-            <Card className="diagnostic-card">
+            <Card className="p-6 shadow-lg">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-medium tracking-tight mb-2">
@@ -448,41 +111,80 @@ export function DiagnosticForm() {
                   )}
                 </div>
 
-                <div className="space-y-3">
-                  {currentQuestion.options.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() =>
-                        handleOptionSelect(currentQuestion.id, option)
-                      }
+                {currentQuestion.type === "binary" ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button
+                      variant="outline"
                       className={cn(
-                        "w-full text-left p-4 rounded-xl border transition-all duration-200 diagnostic-button",
-                        answers[currentQuestion.id] === option.value
-                          ? "bg-primary/10 border-primary"
-                          : "bg-card hover:bg-secondary/50 border-border"
+                        "h-auto py-6 px-4",
+                        answers[currentQuestion.id] === true && "bg-destructive/10 border-destructive"
                       )}
+                      onClick={() => handleAnswer(true)}
                     >
-                      <div className="flex items-center">
-                        <div className="mr-3">{option.icon}</div>
-                        <span className="font-medium">{option.label}</span>
+                      <div className="flex flex-col items-center gap-2">
+                        <Check className="h-6 w-6 text-destructive" />
+                        <span>Oui</span>
                       </div>
-                    </button>
-                  ))}
-                </div>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "h-auto py-6 px-4",
+                        answers[currentQuestion.id] === false && "bg-primary/10 border-primary"
+                      )}
+                      onClick={() => handleAnswer(false)}
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <X className="h-6 w-6 text-primary" />
+                        <span>Non</span>
+                      </div>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {additionalChecks.map((check) => (
+                      <div key={check.id} className="flex items-start space-x-3 p-3 rounded-lg border">
+                        <Checkbox
+                          id={check.id}
+                          checked={additionalIssues.includes(check.id)}
+                          onCheckedChange={(checked) => 
+                            handleAdditionalChecks(check.id, checked as boolean)
+                          }
+                        />
+                        <div className="space-y-1">
+                          <label
+                            htmlFor={check.id}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {check.text}
+                          </label>
+                          <p className="text-sm text-muted-foreground">
+                            {check.details}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    <Button 
+                      className="w-full mt-6"
+                      onClick={finalizeCheck}
+                    >
+                      Terminer le diagnostic
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
 
-            <div className="flex justify-between mt-6">
+            {currentQuestionIndex > 0 && currentQuestion.type === "binary" && (
               <Button
                 variant="outline"
-                onClick={goToPreviousStep}
-                disabled={currentStep === 0}
-                className="diagnostic-button"
+                onClick={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
+                className="mt-4"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Précédent
+                Question précédente
               </Button>
-            </div>
+            )}
           </motion.div>
         ) : (
           <motion.div
@@ -493,115 +195,86 @@ export function DiagnosticForm() {
             className="space-y-8"
           >
             <div className="text-center">
-              <h1 className="text-3xl font-bold mb-2">Résultats du Diagnostic</h1>
+              <h1 className="text-3xl font-bold mb-2">Résultat du Diagnostic</h1>
               <p className="text-muted-foreground">
-                Selon votre évaluation, voici notre recommandation:
+                Voici notre recommandation basée sur l'évaluation :
               </p>
             </div>
 
-            <Card
-              className={cn(
-                "border-2 shadow-lg overflow-hidden",
-                recommendation.color
-              )}
-            >
-              <div className={cn("p-1", recommendation.bgGradient)}>
-                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-8">
-                  <div className="text-center space-y-6">
-                    <div className={cn("mx-auto w-20 h-20 rounded-full flex items-center justify-center border shadow-sm", recommendation.iconBg)}>
-                      <motion.div
-                        initial={{ rotate: 0 }}
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: 0, ease: "easeInOut" }}
-                      >
-                        {recommendation.icon}
-                      </motion.div>
-                    </div>
-                    <div>
-                      <h2 className={cn("text-2xl font-semibold mb-3", recommendation.textColor)}>
-                        {recommendation.title}
-                      </h2>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {recommendation.description}
-                      </p>
-                    </div>
+            <Card className={cn(
+              "border-2 shadow-lg overflow-hidden",
+              result?.decision === "keep" 
+                ? "border-green-200 bg-green-50"
+                : "border-red-200 bg-red-50"
+            )}>
+              <div className="p-8">
+                <div className="text-center space-y-6">
+                  <div className={cn(
+                    "mx-auto w-20 h-20 rounded-full flex items-center justify-center border",
+                    result?.decision === "keep"
+                      ? "bg-green-100 border-green-200"
+                      : "bg-red-100 border-red-200"
+                  )}>
+                    <motion.div
+                      initial={{ rotate: 0 }}
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: 0, ease: "easeInOut" }}
+                    >
+                      {result?.decision === "keep" ? (
+                        <Check className="h-8 w-8 text-green-600" />
+                      ) : (
+                        <Wrench className="h-8 w-8 text-red-600" />
+                      )}
+                    </motion.div>
+                  </div>
+
+                  <div>
+                    <h2 className={cn(
+                      "text-2xl font-semibold mb-3",
+                      result?.decision === "keep" ? "text-green-800" : "text-red-800"
+                    )}>
+                      {result?.decision === "keep" 
+                        ? "Le vélo peut être conservé"
+                        : "Le vélo doit être démonté"}
+                    </h2>
+                    
+                    {result?.additionalTasks && result.additionalTasks.length > 0 && (
+                      <div className="mt-6 text-left">
+                        <h3 className="text-lg font-medium mb-3">
+                          Tâches de maintenance nécessaires :
+                        </h3>
+                        <ul className="space-y-2">
+                          {result.additionalTasks.map((task, index) => (
+                            <li 
+                              key={index}
+                              className="flex items-center justify-between p-3 rounded-lg bg-white/50 border"
+                            >
+                              <span>{task.task}</span>
+                              <span className="text-sm font-medium text-muted-foreground">
+                                +{task.timeEstimate} min
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                        {result.totalAdditionalTime && (
+                          <p className="mt-4 text-sm font-medium text-muted-foreground">
+                            Temps total estimé : {result.totalAdditionalTime} minutes
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </Card>
 
-            <div className="grid grid-cols-3 gap-4">
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                <Card className="p-5 text-center hover:shadow-md transition-shadow">
-                  <div className="text-sm text-muted-foreground mb-1">Remettre à Neuf</div>
-                  <div className="text-2xl font-semibold text-green-600">
-                    {Math.round((scores.refurbish / 50) * 100)}%
-                  </div>
-                  <div className="w-full bg-gray-100 h-1.5 mt-2 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-green-500 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.round((scores.refurbish / 50) * 100)}%` }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                    />
-                  </div>
-                </Card>
-              </motion.div>
-              
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <Card className="p-5 text-center hover:shadow-md transition-shadow">
-                  <div className="text-sm text-muted-foreground mb-1">Récupérer</div>
-                  <div className="text-2xl font-semibold text-amber-600">
-                    {Math.round((scores.salvage / 25) * 100)}%
-                  </div>
-                  <div className="w-full bg-gray-100 h-1.5 mt-2 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-amber-500 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.round((scores.salvage / 25) * 100)}%` }}
-                      transition={{ duration: 0.8, delay: 0.3 }}
-                    />
-                  </div>
-                </Card>
-              </motion.div>
-              
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-              >
-                <Card className="p-5 text-center hover:shadow-md transition-shadow">
-                  <div className="text-sm text-muted-foreground mb-1">Recycler</div>
-                  <div className="text-2xl font-semibold text-blue-600">
-                    {Math.round((scores.recycle / 37) * 100)}%
-                  </div>
-                  <div className="w-full bg-gray-100 h-1.5 mt-2 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-blue-500 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.round((scores.recycle / 37) * 100)}%` }}
-                      transition={{ duration: 0.8, delay: 0.4 }}
-                    />
-                  </div>
-                </Card>
-              </motion.div>
-            </div>
-
             <Button
               onClick={resetDiagnostic}
-              className="w-full diagnostic-button hover:bg-green-600 shadow-md"
+              className="w-full shadow-md"
               size="lg"
             >
               <Bike className="mr-2 h-5 w-5" />
-              Commencer une Nouvelle Évaluation
+              Commencer un nouveau diagnostic
             </Button>
           </motion.div>
         )}
