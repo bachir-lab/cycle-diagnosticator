@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { diagnosticQuestions } from "@/data/diagnostic-questions";
 import { 
   ArrowLeft, Bike, Wrench, 
   RotateCcw, Check, X,
-  Frame, Settings, ChevronUp, Tool
+  Frame, Settings, ChevronUp, Hammer
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -26,7 +27,7 @@ export function DiagnosticForm() {
       case "seatpost":
         return <ChevronUp className="h-8 w-8" />;
       case "stem":
-        return <Tool className="h-8 w-8" />;
+        return <Hammer className="h-8 w-8" />;
       case "fork":
         return <Wrench className="h-8 w-8" />;
       case "frame":
