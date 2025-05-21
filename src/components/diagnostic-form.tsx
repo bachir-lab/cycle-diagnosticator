@@ -285,7 +285,7 @@ export function DiagnosticForm() {
               </Button>
               
               <Link to="/" className="shadow-md">
-                <Button className="w-full" size="lg">
+                <Button className="w-full" size="lg" role="link" aria-label="Retour à l'accueil">
                   <Bike className="mr-2 h-5 w-5" />
                   Retour à l'accueil
                 </Button>
@@ -297,3 +297,4 @@ export function DiagnosticForm() {
     </div>
   );
 }
+
