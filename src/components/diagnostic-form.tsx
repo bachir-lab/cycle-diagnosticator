@@ -3,24 +3,43 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { cn } from "@/lib/utils";
 import { DiagnosticResult } from "@/types/diagnostic";
-import { diagnosticQuestions, additionalChecks } from "@/data/diagnostic-questions";
+import { diagnosticQuestions } from "@/data/diagnostic-questions";
 import { 
   ArrowLeft, Bike, Wrench, 
-  RotateCcw, Check, X
+  RotateCcw, Check, X,
+  Frame, Crankset, Seatpost, Stem
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function DiagnosticForm() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
-  const [additionalIssues, setAdditionalIssues] = useState<string[]>([]);
   const [result, setResult] = useState<DiagnosticResult | null>(null);
   const [showResults, setShowResults] = useState(false);
 
   const currentQuestion = diagnosticQuestions[currentQuestionIndex];
+
+  const getComponentIcon = (component: string) => {
+    switch(component) {
+      case "seatpost":
+        return <Seatpost className="h-8 w-8" />;
+      case "stem":
+        return <Stem className="h-8 w-8" />;
+      case "fork":
+        return <Wrench className="h-8 w-8" />;
+      case "frame":
+        return <Frame className="h-8 w-8" />;
+      case "crankset":
+        return <Crankset className="h-8 w-8" />;
+      case "brake":
+        return <Wrench className="h-8 w-8" />;
+      default:
+        return <Bike className="h-8 w-8" />;
+    }
+  };
 
   const handleAnswer = (answer: boolean) => {
     const newAnswers = { ...answers, [currentQuestion.id]: answer };
@@ -32,7 +51,13 @@ export function DiagnosticForm() {
       if (nextAction === "dismantle") {
         setResult({
           decision: "dismantle",
-          additionalTasks: []
+          component: currentQuestion.component,
+          reason: currentQuestion.text
+        });
+        setShowResults(true);
+      } else if (nextAction === "keep") {
+        setResult({
+          decision: "keep"
         });
         setShowResults(true);
       } else if (nextAction === "continue") {
@@ -45,39 +70,32 @@ export function DiagnosticForm() {
     }
   };
 
-  const handleAdditionalChecks = (checkId: string, checked: boolean) => {
-    setAdditionalIssues(prev => 
-      checked 
-        ? [...prev, checkId]
-        : prev.filter(id => id !== checkId)
-    );
-  };
-
-  const finalizeCheck = () => {
-    const additionalTasks = additionalIssues.map(issueId => {
-      const check = additionalChecks.find(c => c.id === issueId);
-      return {
-        task: check?.text || "",
-        timeEstimate: check?.timeEstimate || 0
-      };
-    });
-
-    const totalTime = additionalTasks.reduce((acc, task) => acc + task.timeEstimate, 0);
-
-    setResult({
-      decision: totalTime > 60 ? "dismantle" : "keep",
-      additionalTasks,
-      totalAdditionalTime: totalTime
-    });
-    setShowResults(true);
-  };
-
   const resetDiagnostic = () => {
     setCurrentQuestionIndex(0);
     setAnswers({});
-    setAdditionalIssues([]);
     setResult(null);
     setShowResults(false);
+  };
+
+  const getFailureReason = () => {
+    if (!result || !result.component || !result.reason) return "";
+    
+    switch(result.component) {
+      case "seatpost":
+        return "Problème avec la tige de selle";
+      case "stem":
+        return "Problème avec la potence";
+      case "fork":
+        return "Problème avec la fourche";
+      case "frame":
+        return "Problème avec le cadre";
+      case "crankset":
+        return "Problème avec le pédalier";
+      case "brake":
+        return "Problème avec les freins";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -98,84 +116,76 @@ export function DiagnosticForm() {
               className="mb-8"
             />
 
-            <Card className="p-6 shadow-lg">
+            <Card className="p-6 shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 left-0 h-1 bg-primary" style={{ 
+                width: `${((currentQuestionIndex + 1) / diagnosticQuestions.length) * 100}%`,
+                transition: 'width 0.5s ease-in-out'
+              }}></div>
+              
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-medium tracking-tight mb-2">
-                    {currentQuestion.text}
-                  </h2>
-                  {currentQuestion.subtext && (
-                    <p className="text-muted-foreground text-sm">
-                      {currentQuestion.subtext}
-                    </p>
-                  )}
+                <div className="flex items-center mb-6">
+                  <div className="p-3 bg-primary/10 rounded-full mr-4">
+                    {getComponentIcon(currentQuestion.component)}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                      {currentQuestion.component === "seatpost" ? "Tige de selle" : 
+                       currentQuestion.component === "stem" ? "Potence" :
+                       currentQuestion.component === "fork" ? "Fourche" :
+                       currentQuestion.component === "frame" ? "Cadre" :
+                       currentQuestion.component === "crankset" ? "Pédalier" :
+                       "Étriers de frein"}
+                    </h3>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      {currentQuestion.text}
+                    </h2>
+                  </div>
                 </div>
-
-                {currentQuestion.type === "binary" ? (
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "h-auto py-6 px-4",
-                        answers[currentQuestion.id] === true && "bg-destructive/10 border-destructive"
-                      )}
-                      onClick={() => handleAnswer(true)}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Check className="h-6 w-6 text-destructive" />
-                        <span>Oui</span>
-                      </div>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "h-auto py-6 px-4",
-                        answers[currentQuestion.id] === false && "bg-primary/10 border-primary"
-                      )}
-                      onClick={() => handleAnswer(false)}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <X className="h-6 w-6 text-primary" />
-                        <span>Non</span>
-                      </div>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {additionalChecks.map((check) => (
-                      <div key={check.id} className="flex items-start space-x-3 p-3 rounded-lg border">
-                        <Checkbox
-                          id={check.id}
-                          checked={additionalIssues.includes(check.id)}
-                          onCheckedChange={(checked) => 
-                            handleAdditionalChecks(check.id, checked as boolean)
-                          }
-                        />
-                        <div className="space-y-1">
-                          <label
-                            htmlFor={check.id}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {check.text}
-                          </label>
-                          <p className="text-sm text-muted-foreground">
-                            {check.details}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    <Button 
-                      className="w-full mt-6"
-                      onClick={finalizeCheck}
-                    >
-                      Terminer le diagnostic
-                    </Button>
-                  </div>
+                
+                {currentQuestion.subtext && (
+                  <p className="text-muted-foreground">
+                    {currentQuestion.subtext}
+                  </p>
                 )}
+
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className={cn(
+                      "h-auto py-6 px-4 border-2",
+                      answers[currentQuestion.id] === true ? "bg-destructive/10 border-destructive" : "hover:border-destructive/50"
+                    )}
+                    onClick={() => handleAnswer(true)}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-10 w-10 rounded-full flex items-center justify-center bg-destructive/10">
+                        <Check className="h-6 w-6 text-destructive" />
+                      </div>
+                      <span className="font-semibold text-lg">OUI</span>
+                    </div>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className={cn(
+                      "h-auto py-6 px-4 border-2",
+                      answers[currentQuestion.id] === false ? "bg-primary/10 border-primary" : "hover:border-primary/50"
+                    )}
+                    onClick={() => handleAnswer(false)}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-10 w-10 rounded-full flex items-center justify-center bg-primary/10">
+                        <X className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="font-semibold text-lg">NON</span>
+                    </div>
+                  </Button>
+                </div>
               </div>
             </Card>
 
-            {currentQuestionIndex > 0 && currentQuestion.type === "binary" && (
+            {currentQuestionIndex > 0 && (
               <Button
                 variant="outline"
                 onClick={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
@@ -204,78 +214,86 @@ export function DiagnosticForm() {
             <Card className={cn(
               "border-2 shadow-lg overflow-hidden",
               result?.decision === "keep" 
-                ? "border-green-200 bg-green-50"
-                : "border-red-200 bg-red-50"
+                ? "border-green-200"
+                : "border-red-200"
             )}>
+              <div className={cn(
+                "h-2",
+                result?.decision === "keep" ? "bg-green-500" : "bg-red-500"
+              )}/>
               <div className="p-8">
                 <div className="text-center space-y-6">
                   <div className={cn(
-                    "mx-auto w-20 h-20 rounded-full flex items-center justify-center border",
+                    "mx-auto w-24 h-24 rounded-full flex items-center justify-center border-4",
                     result?.decision === "keep"
-                      ? "bg-green-100 border-green-200"
-                      : "bg-red-100 border-red-200"
+                      ? "bg-green-50 border-green-200"
+                      : "bg-red-50 border-red-200"
                   )}>
                     <motion.div
-                      initial={{ rotate: 0 }}
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: 0, ease: "easeInOut" }}
+                      initial={{ rotate: 0, scale: 0.8 }}
+                      animate={{ rotate: 360, scale: 1 }}
+                      transition={{ duration: 1, repeat: 0, ease: "easeOut" }}
                     >
                       {result?.decision === "keep" ? (
-                        <Check className="h-8 w-8 text-green-600" />
+                        <Check className="h-12 w-12 text-green-600" />
                       ) : (
-                        <Wrench className="h-8 w-8 text-red-600" />
+                        <Wrench className="h-12 w-12 text-red-600" />
                       )}
                     </motion.div>
                   </div>
 
                   <div>
                     <h2 className={cn(
-                      "text-2xl font-semibold mb-3",
-                      result?.decision === "keep" ? "text-green-800" : "text-red-800"
+                      "text-2xl font-bold mb-3",
+                      result?.decision === "keep" ? "text-green-700" : "text-red-700"
                     )}>
                       {result?.decision === "keep" 
-                        ? "Le vélo peut être conservé"
-                        : "Le vélo doit être démonté"}
+                        ? "ON GARDE LE VÉLO POUR RÉPARATION"
+                        : "À DÉSOSSER"}
                     </h2>
                     
-                    {result?.additionalTasks && result.additionalTasks.length > 0 && (
-                      <div className="mt-6 text-left">
-                        <h3 className="text-lg font-medium mb-3">
-                          Tâches de maintenance nécessaires :
-                        </h3>
-                        <ul className="space-y-2">
-                          {result.additionalTasks.map((task, index) => (
-                            <li 
-                              key={index}
-                              className="flex items-center justify-between p-3 rounded-lg bg-white/50 border"
-                            >
-                              <span>{task.task}</span>
-                              <span className="text-sm font-medium text-muted-foreground">
-                                +{task.timeEstimate} min
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                        {result.totalAdditionalTime && (
-                          <p className="mt-4 text-sm font-medium text-muted-foreground">
-                            Temps total estimé : {result.totalAdditionalTime} minutes
-                          </p>
-                        )}
+                    {result?.decision === "dismantle" && result.component && (
+                      <div className="mt-6">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-red-50 border border-red-200 text-red-700">
+                          <span className="font-medium">{getFailureReason()}</span>
+                        </div>
+                        <p className="mt-4 text-muted-foreground">
+                          Ce vélo présente un problème important qui justifie son désossement plutôt que sa réparation.
+                        </p>
                       </div>
+                    )}
+                    
+                    {result?.decision === "keep" && (
+                      <p className="text-green-700 mt-2">
+                        Ce vélo ne présente pas de problèmes majeurs et peut être conservé pour réparation.
+                      </p>
                     )}
                   </div>
                 </div>
               </div>
             </Card>
 
-            <Button
-              onClick={resetDiagnostic}
-              className="w-full shadow-md"
-              size="lg"
-            >
-              <Bike className="mr-2 h-5 w-5" />
-              Commencer un nouveau diagnostic
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                onClick={resetDiagnostic}
+                variant="outline"
+                className="shadow-sm"
+                size="lg"
+              >
+                <RotateCcw className="mr-2 h-5 w-5" />
+                Nouveau diagnostic
+              </Button>
+              
+              <Button
+                component={Link}
+                to="/"
+                className="shadow-md"
+                size="lg"
+              >
+                <Bike className="mr-2 h-5 w-5" />
+                Retour à l'accueil
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
