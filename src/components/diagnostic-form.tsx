@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import { diagnosticQuestions } from "@/data/diagnostic-questions";
 import { 
   ArrowLeft, Bike, Wrench, 
   RotateCcw, Check, X,
-  Frame, Crankset, Seatpost, Stem
+  Frame, Settings, ChevronUp, Tool
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -25,15 +24,15 @@ export function DiagnosticForm() {
   const getComponentIcon = (component: string) => {
     switch(component) {
       case "seatpost":
-        return <Seatpost className="h-8 w-8" />;
+        return <ChevronUp className="h-8 w-8" />;
       case "stem":
-        return <Stem className="h-8 w-8" />;
+        return <Tool className="h-8 w-8" />;
       case "fork":
         return <Wrench className="h-8 w-8" />;
       case "frame":
         return <Frame className="h-8 w-8" />;
       case "crankset":
-        return <Crankset className="h-8 w-8" />;
+        return <Settings className="h-8 w-8" />;
       case "brake":
         return <Wrench className="h-8 w-8" />;
       default:
@@ -284,15 +283,12 @@ export function DiagnosticForm() {
                 Nouveau diagnostic
               </Button>
               
-              <Button
-                component={Link}
-                to="/"
-                className="shadow-md"
-                size="lg"
-              >
-                <Bike className="mr-2 h-5 w-5" />
-                Retour à l'accueil
-              </Button>
+              <Link to="/" className="shadow-md">
+                <Button className="w-full" size="lg">
+                  <Bike className="mr-2 h-5 w-5" />
+                  Retour à l'accueil
+                </Button>
+              </Link>
             </div>
           </motion.div>
         )}
