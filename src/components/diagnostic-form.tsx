@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -273,7 +272,7 @@ export function DiagnosticForm() {
               </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <Button
                 onClick={resetDiagnostic}
                 variant="outline"
@@ -283,13 +282,6 @@ export function DiagnosticForm() {
                 <RotateCcw className="mr-2 h-5 w-5" />
                 Nouveau diagnostic
               </Button>
-              
-              <Link to="/" className="shadow-md">
-                <Button className="w-full" size="lg" role="link" aria-label="Retour à l'accueil">
-                  <Bike className="mr-2 h-5 w-5" />
-                  Retour à l'accueil
-                </Button>
-              </Link>
             </div>
           </motion.div>
         )}
@@ -297,4 +289,3 @@ export function DiagnosticForm() {
     </div>
   );
 }
-
