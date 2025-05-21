@@ -46,8 +46,8 @@ const Index = () => {
             Outil d'Évaluation des Dons de Vélos
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Répondez à quelques questions pour déterminer si un vélo donné doit être
-            remis à neuf, récupéré pour ses pièces, ou recyclé.
+            Suivez les étapes du diagnostic pour déterminer si un vélo donné doit être
+            conservé pour réparation ou désossé pour ses pièces.
           </p>
         </motion.div>
 
